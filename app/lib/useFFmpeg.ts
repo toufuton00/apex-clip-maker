@@ -99,8 +99,10 @@ export function useFFmpeg() {
 
       // 出力を読み込み
       const data = await ffmpeg.readFile("output.mp4");
-      const blob = new Blob([data], { type: "video/mp4" });
 
+      // 型変換してBlob作成
+      const blob = new Blob([new Uint8Array(data as unknown as ArrayBuffer)], { type: "video/mp4" });
+      
       // 仮想FSをクリア
       for (const name of inputNames) {
         try {
@@ -243,8 +245,20 @@ export function useFFmpeg() {
         }
 
         const data = await ffmpeg.readFile(outputName);
-        const blob = new Blob([data], { type: "video/mp4" });
 
+// 必ずUint8Arrayに変換
+const uint8 = data instanceof Uint8Array
+  ? data
+  : new Uint8Array(data as unknown as ArrayBuffer);
+
+// 新しいArrayBufferを作成（SharedArrayBuffer対策）
+const safeBuffer = new Uint8Array(uint8).buffer;
+
+// Blob生成
+const blob = new Blob([safeBuffer], {
+  type: "video/mp4",
+});
+   
         for (const name of [...inputNames, ...segmentNames]) {
           try {
             await ffmpeg.deleteFile(name);
