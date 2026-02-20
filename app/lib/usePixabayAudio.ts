@@ -36,12 +36,7 @@ export function usePixabayAudio() {
     setError(null);
     try {
       const params = new URLSearchParams({ q: query, page: String(page), per_page: "20" });
-      const apiKey = process.env.NEXT_PUBLIC_PIXABAY_API_KEY;
-
-      const res = await fetch(
-        `https://pixabay.com/api/audio/?key=${apiKey}&${params.toString()}`
-      );
-
+      const res = await fetch(`/api/pixabay/audio?${params.toString()}`);
       const data = await res.json();
 
       if (!res.ok) {
