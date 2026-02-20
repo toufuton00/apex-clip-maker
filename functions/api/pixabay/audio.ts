@@ -13,17 +13,30 @@ export const onRequestGet = async (context: any) => {
     );
   }
 
-  const pixabayUrl = `https://pixabay.com/api/audio/?key=${apiKey}&${query}`;
+  const pixabayUrl =
+    `https://pixabay.com/api/audio/?key=${apiKey}&${query}`;
 
   const res = await fetch(pixabayUrl, {
+    method: "GET",
     headers: {
-      "User-Agent": "Cloudflare Pages"
+      "User-Agent": "Mozilla/5.0",
+      "Referer": "https://pixabay.com/",
+      "Accept": "application/json"
     }
   });
+
+  if (!res.ok) {
+    const text = await res.text();
+    return new Response(text, { status: res.status });
+  }
 
   const data = await res.text();
 
   return new Response(data, {
-    headers: { "Content-Type": "application/json" },
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    }
   });
 };
