@@ -15,7 +15,11 @@ export const onRequestGet = async (context: any) => {
 
   const pixabayUrl = `https://pixabay.com/api/audio/?key=${apiKey}&${query}`;
 
-  const res = await fetch(pixabayUrl);
+  const res = await fetch(pixabayUrl, {
+    headers: {
+      "User-Agent": "Cloudflare Pages"
+    }
+  });
 
   const data = await res.text();
 
