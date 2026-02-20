@@ -1,4 +1,6 @@
-export const onRequestGet = async ({ request, env }: any) => {
+export const onRequestGet = async (context: any) => {
+  const { request, env } = context;
+
   const url = new URL(request.url);
   const query = url.searchParams.toString();
 
@@ -14,22 +16,15 @@ export const onRequestGet = async ({ request, env }: any) => {
   const pixabayUrl = `https://pixabay.com/api/audio/?key=${apiKey}&${query}`;
 
   const res = await fetch(pixabayUrl, {
-    method: "GET",
     headers: {
+      "User-Agent": "Mozilla/5.0",
       "Accept": "application/json",
-      "User-Agent": "apex-clip-maker/1.0",
-      "Referer": "https://pixabay.com/",
-      "Origin": "https://pixabay.com",
     },
   });
 
-  const text = await res.text();
+  const data = await res.text();
 
-  return new Response(text, {
-    status: res.status,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
+  return new Response(data, {
+    headers: { "Content-Type": "application/json" },
   });
 };
