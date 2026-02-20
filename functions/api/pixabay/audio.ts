@@ -13,15 +13,13 @@ export const onRequestGet = async (context: any) => {
     );
   }
 
-  const apiUrl = `https://pixabay.com/api/audio/?key=${apiKey}&${query}`;
+  const pixabayUrl = `https://pixabay.com/api/audio/?key=${apiKey}&${query}`;
 
-  const res = await fetch(apiUrl);
+  const res = await fetch(pixabayUrl);
+
   const data = await res.text();
 
   return new Response(data, {
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
+    headers: { "Content-Type": "application/json" },
   });
 };
