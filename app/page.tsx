@@ -14,6 +14,9 @@ export default function Home() {
   const [selectedAudioPreset, setSelectedAudioPreset] = useState<string>("original");
   const [selectedPixabayTrack, setSelectedPixabayTrack] = useState<PixabayAudioTrack | null>(null);
   const { tracks, isLoading, error, fetchAudio } = usePixabayAudio();
+useEffect(() => {
+  fetchAudio("gaming");
+}, [fetchAudio]);
   const { bpm, isAnalyzing: isBpmAnalyzing, error: bpmError, analyzeFromUrl, reset: resetBpm } = useBPMAnalysis();
   const [manualBpm, setManualBpm] = useState<string>("120");
   const [bpmOverride, setBpmOverride] = useState<number | null>(null);
@@ -26,7 +29,25 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mergeVideos, mergeVideosWithBeats, isLoading: isFFmpegLoading, error: ffmpegError } = useFFmpeg();
 
+// AIおすすめ音源を自動選択
+const handleAutoPickAudio = () => {
+  if (!tracks || tracks.length === 0) {
+    fetchAudio("gaming");
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * tracks.length);
+  const track = tracks[randomIndex];
+
+  setSelectedPixabayTrack(track);
+};
+
   const effectiveBpm = bpmOverride ?? bpm ?? (manualBpm ? parseInt(manualBpm, 10) : 120);
+
+  useEffect(() => {
+    fetchAudio("gaming");
+  }, []);
+
   const isValidBpm = effectiveBpm >= 60 && effectiveBpm <= 200;
 
   useEffect(() => {
@@ -213,6 +234,14 @@ export default function Home() {
           isLoading={isLoading}
           error={error}
         />
+
+        {/* AI音源自動選択 */}
+        <button
+         onClick={handleAutoPickAudio}
+         className="w-full min-h-[48px] py-3 rounded-xl bg-purple-500/80 hover:bg-purple-600 text-white font-semibold transition-all tap-target"
+>
+        🎧 AIおすすめ音源を自動選択
+        </button>
 
         {/* BPM・ビート配置 */}
         <section className="glass rounded-2xl p-4 sm:p-5">
