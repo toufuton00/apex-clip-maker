@@ -63,8 +63,7 @@ const handleAutoPickAudio = () => {
   // Tone.js TransportをBPMに同期（ビート配置の基準として使用）
   useEffect(() => {
     if (useBeatSync && isValidBpm) {
-      import("tone").then((mod) => {
-        const Tone = mod.default;
+      import("tone").then((Tone) => {
         if (Tone?.getTransport) {
           Tone.getTransport().bpm.value = effectiveBpm;
         }
