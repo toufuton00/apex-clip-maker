@@ -1,27 +1,32 @@
-export async function onRequestGet() {
-    const url = "https://mixkit.co/free-stock-music/";
-  
-    const res = await fetch(url, {
+export const runtime = "edge";
+
+export async function GET() {
+  try {
+    const res = await fetch("https://api.mixkit.co/free-sound-effects/", {
       headers: {
-        "User-Agent": "Mozilla/5.0"
-      }
+        Accept: "application/json",
+      },
     });
-  
-    const html = await res.text();
-  
-    const matches = [...html.matchAll(/https:\/\/assets\.mixkit\.co\/music\/preview\/[^"]+\.mp3/g)];
-  
-    const unique = [...new Set(matches.map(m => m[0]))];
-  
-    const tracks = unique.slice(0, 20).map((url, i) => ({
-      id: i,
-      name: `Mixkit Track ${i + 1}`,
-      url
-    }));
-  
-    return new Response(JSON.stringify({ tracks }), {
+
+    if (!res.ok) {
+      return new Response(
+        JSON.stringify({ error: "Failed to fetch audio" }),
+        { status: 500 }
+      );
+    }
+
+    const data = await res.text();
+
+    return new Response(data, {
       headers: {
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
+  } catch (e) {
+    return new Response(
+      JSON.stringify({ error: "Server error" }),
+      { status: 500 }
+    );
   }
+}
